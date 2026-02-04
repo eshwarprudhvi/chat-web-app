@@ -6,7 +6,7 @@ import { useMemo } from "react";
 interface ConversationWithUsers {
   users: User[];
 }
-const useOtherUser = async (conversation: ConversationWithUsers) => {
+const useOtherUser = (conversation: ConversationWithUsers) => {
   const session = useSession();
 
   const otherUser = useMemo(() => {

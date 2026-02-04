@@ -3,7 +3,7 @@ import client from "@/lib/prisma";
 const getMessages = async (conversationId: string) => {
   try {
     const messages = await client.message.findMany({
-      where: { id: conversationId },
+      where: { conversationId: conversationId },
       include: {
         seen: true,
         sender: true,

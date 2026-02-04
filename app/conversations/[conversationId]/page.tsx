@@ -1,28 +1,37 @@
 import getConversationById from "@/app/actions/getConversationById";
 import getMessages from "@/app/actions/getMessages";
 import Header from "./components/Header";
+import EmptyBox from "@/app/components/EmptyBox";
+import Body from "./components/Body";
+import Form from "./components/Form";
 interface Iparams {
   conversationId: string;
 }
 
 const ConversationId = async ({ params }: { params: Iparams }) => {
-  const conversation = await getConversationById(params.conversationId);
-  const messages = await getMessages(params.conversationId);
+  const { conversationId } = await params;
 
-  console.log(params.conversationId);
+  const conversation = await getConversationById(conversationId);
+  const messages = await getMessages(conversationId);
+
+  // console.log(conversationId);
 
   if (!conversation) {
     return (
-      <div className="lg:pl-80 h-full">
+      <div className=" h-full">
         <div className="h-full flex flex-col">
-          <p>Empty conversations</p>
+          <EmptyBox text={"No Conversation Yet"} />
         </div>
       </div>
     );
   }
   return (
-    <div>
-      <Header conversation={conversation} />
+    <div className="h-full">
+      <div className="h-full flex flex-col">
+        <Header conversation={conversation} />
+        <Body initialMessages={messages} />
+        <Form />
+      </div>
     </div>
   );
 };
