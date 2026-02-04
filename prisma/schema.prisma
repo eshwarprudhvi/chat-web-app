@@ -1,0 +1,97 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id    String     @id @default(cuid())
+  email String  @unique
+  name  String?
+  image String?
+  password String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  emailVerified DateTime?
+
+  
+  conversations Conversation[] 
+
+
+  seenMessageIds String[] 
+  seenMessages Message[] @relation("seen")
+
+  accounts Account[]
+  sessions Session[]
+  
+  messages Message[]
+}
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+//accont model is used for nextjauth 
+model Account{
+  id String @id @default(cuid())
+  userId String
+  type String //emali oauth
+  provider String //google , github
+  providerAccountId String
+  refresh_token String?
+  access_token String?
+  expires_at Int?
+  token_type String?
+  scope String?
+  id_token String?
+  session_state String?
+
+  user User @relation(fields: [userId] ,references: [id],onDelete: Cascade) //cascade means if user delete then Account also dellted 
+
+  @@unique([provider,providerAccountId])
+
+}
+
+model Conversation{
+    id String @id @default(cuid())
+  createdAt DateTime @default(now())
+  lastMessage DateTime @default(now())
+  name String?
+  isGroup Boolean
+
+
+  messages Message[] 
+
+ 
+  users User[]
+}
+
+model Message{
+  id String @id @default(cuid())
+  body String?
+  image String?
+  createdAt DateTime @default(now())
+
+ 
+  seen User[] @relation("seen")
+
+  conversationId String
+  conversation Conversation @relation(fields: [conversationId],references: [id],onDelete: Cascade)
+
+  senderId String
+  sender User @relation(fields: [senderId],references: [id],onDelete: Cascade)
+
+}
