@@ -62,15 +62,22 @@ export async function POST(request: Request) {
         }, // adding new code here
       });
 
-      newConversation.users.forEach((user) => {
-        if (user.email) {
-          pusherServer.trigger(
-            user.email,
-            "conversation:update",
-            newConversation
-          );
-        }
-      });
+      // newConversation.users.forEach((user) => {
+      //   if (user.email) {
+      //     pusherServer.trigger(
+      //       user.email,
+      //       "conversation:update",
+      //       newConversation
+      //     );
+      //   }
+      // });
+
+      //new code
+      await pusherServer.trigger(
+        currentUser.email,
+        "conversation:new",
+        newConversation
+      );
 
       return NextResponse.json(newConversation);
     }
@@ -80,7 +87,7 @@ export async function POST(request: Request) {
       if (!name || typeof name !== "string") {
         return NextResponse.json("Group name is required", { status: 400 });
       }
-      if (userIds.length <= 2) {
+      if (userIds.length < 2) {
         return NextResponse.json("Group should contain atleast 3 members");
       }
 
@@ -100,11 +107,12 @@ export async function POST(request: Request) {
           },
         },
       });
+
       newGroupConversation.users.forEach((user) => {
         if (user.email) {
           pusherServer.trigger(
             user.email,
-            "conversation:update",
+            "conversation:new",
             newGroupConversation
           );
         }

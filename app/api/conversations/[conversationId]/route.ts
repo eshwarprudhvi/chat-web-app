@@ -1,6 +1,7 @@
 import client from "@/lib/prisma";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import { NextResponse } from "next/server";
+import { pusherServer } from "@/lib/pusher";
 
 interface Iparams {
   conversationId?: string;
@@ -19,7 +20,7 @@ export async function DELETE(
     if (!conversationId) {
       return new NextResponse("Invalid ConversationID", { status: 400 });
     }
-    const conversation = client.conversation.findFirst({
+    const conversation = await client.conversation.findFirst({
       where: {
         id: conversationId,
         users: {
@@ -28,6 +29,7 @@ export async function DELETE(
           },
         },
       },
+      include: { users: true },
     });
     if (!conversation) {
       return new NextResponse("Conversaiton doesn't exist", { status: 404 });
@@ -37,6 +39,20 @@ export async function DELETE(
       where: {
         id: conversationId,
       },
+    });
+
+    // conversation.users.forEach((user) => {
+    //   pusherServer.trigger(user.email!, "conversation:remove", {
+    //     id: conversationId,
+    //   });
+    // });
+    //newcode
+    conversation.users.forEach((user) => {
+      if (user.email) {
+        pusherServer.trigger(user.email, "conversation:remove", {
+          id: conversationId,
+        });
+      }
     });
     return NextResponse.json({ success: true });
   } catch (error) {

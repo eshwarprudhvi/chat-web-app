@@ -42,36 +42,52 @@ const ConversationList: React.FC<ConversationListProps> = ({
 
   useEffect(() => {
     if (!currentUserEmail) return;
+    pusherClient.subscribe(currentUserEmail);
 
-    const handler = (data: {
-      id: string;
-      messages: Message[];
-      users: User[];
-    }) => {
+    const updateHandler = (data: { id: string; messages: Message[] }) => {
+      setItems((current) =>
+        current.map((conv) =>
+          conv.id === data.id
+            ? {
+                ...conv,
+                messages: data.messages,
+                lastMessage: new Date(),
+              }
+            : conv
+        )
+      );
+    };
+
+    // Remove conversation
+    const removeHandler = (data: { id: string }) => {
+      setItems((current) => current.filter((conv) => conv.id !== data.id));
+    };
+
+    // New conversation created
+    const newHandler = (
+      conversation: Conversation & {
+        users: User[];
+        messages: Message[];
+      }
+    ) => {
       setItems((current) => {
-        const updated = current.find((c) => c.id === data.id);
-        if (!updated) return current;
-
-        const rest = current.filter((c) => c.id !== data.id);
-
-        return [
-          {
-            ...updated,
-            messages: data.messages,
-            users: data.users,
-            lastMessage: new Date(),
-          },
-          ...rest,
-        ];
+        const exists = current.some((c) => c.id === conversation.id);
+        if (exists) return current;
+        return [conversation, ...current];
       });
     };
 
-    pusherClient.subscribe(currentUserEmail);
-    pusherClient.bind("conversation:update", handler);
+    pusherClient.bind("conversation:update", updateHandler);
+    pusherClient.bind("conversation:remove", removeHandler);
+    pusherClient.bind("conversation:new", newHandler);
 
     return () => {
+      // pusherClient.unsubscribe(currentUserEmail);
+      // pusherClient.unbind("conversation:update", updateHandler);
+      // pusherClient.unbind("conversation:remove", removeHandler);
+      // pusherClient.unbind("conversation:new", newHandler);
       pusherClient.unsubscribe(currentUserEmail);
-      pusherClient.unbind("conversation:update", handler);
+      pusherClient.unbind_all();
     };
   }, [currentUserEmail]);
   return (
