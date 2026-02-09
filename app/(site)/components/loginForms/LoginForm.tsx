@@ -41,6 +41,7 @@ const LoginForm = () => {
         toast.success("Logged in successfully");
 
         // router.push("/users");
+        window.location.href = "/users";
       }
     });
   };
@@ -55,6 +56,7 @@ const LoginForm = () => {
       }
       if (result?.ok && !result?.error) {
         toast.success("Logged in successfully");
+        window.location.href = "/users";
       }
     });
   };
