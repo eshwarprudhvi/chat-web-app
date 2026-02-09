@@ -37,6 +37,9 @@ const ConversationList: React.FC<ConversationListProps> = ({
   //--------------serach option ----end
 
   const [items, setItems] = useState(conversations);
+  useEffect(() => {
+    setItems(conversations);
+  }, [conversations]);
 
   const { onOpen } = useGroupChatModal();
 
@@ -44,18 +47,17 @@ const ConversationList: React.FC<ConversationListProps> = ({
     if (!currentUserEmail) return;
     pusherClient.subscribe(currentUserEmail);
 
-    const updateHandler = (data: { id: string; messages: Message[] }) => {
-      setItems((current) =>
-        current.map((conv) =>
-          conv.id === data.id
-            ? {
-                ...conv,
-                messages: data.messages,
-                lastMessage: new Date(),
-              }
-            : conv
-        )
-      );
+    const updateHandler = (data: {
+      conversation: Conversation & {
+        users: User[];
+        messages: Message[];
+      };
+    }) => {
+      setItems((current) => {
+        const filtered = current.filter((c) => c.id !== data.conversation.id);
+
+        return [data.conversation, ...filtered];
+      });
     };
 
     // Remove conversation

@@ -52,6 +52,8 @@ export async function POST(request: Request) {
       include: {
         users: true,
         messages: {
+          orderBy: { createdAt: "desc" },
+          take: 1,
           include: {
             seen: true,
           },
@@ -64,13 +66,11 @@ export async function POST(request: Request) {
       updatedConversation.messages[updatedConversation.messages.length - 1];
 
     //notify each user
-    updatedConversation.users.map((user) => {
-      pusherServer.trigger(user.email!, "conversation:update", {
-        id: conversationId,
-        messages: [lastMessage],
-        users: updatedConversation.users,
+    for (const user of updatedConversation.users) {
+      await pusherServer.trigger(user.email!, "conversation:update", {
+        conversation: updatedConversation,
       });
-    });
+    }
     return NextResponse.json(newMessage); // nextresponse.json() is a method where as new Nextresponse is a constrcuctore invokign
   } catch (error) {
     console.log(
