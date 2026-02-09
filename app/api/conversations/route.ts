@@ -1,7 +1,8 @@
 import client from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import getCurrentUser from "@/app/actions/getCurrentUser";
-
+import { revalidatePath } from "next/cache";
+import { pusherServer } from "@/lib/pusher";
 export async function POST(request: Request) {
   try {
     const body = await request.json();
@@ -27,6 +28,7 @@ export async function POST(request: Request) {
       //check if there is already 1-1 conversation exists
       const existingConnection = await client.conversation.findFirst({
         where: {
+          isGroup: false,
           AND: [
             { users: { some: { id: currentUser.id } } },
             { users: { some: { id: otherUserId } } },
@@ -51,8 +53,25 @@ export async function POST(request: Request) {
             connect: alluserIds.map((id) => ({ id })),
           },
         },
-        include: { users: true },
+        include: {
+          users: true,
+          messages: {
+            take: 1,
+            orderBy: { createdAt: "desc" },
+          },
+        }, // adding new code here
       });
+
+      newConversation.users.forEach((user) => {
+        if (user.email) {
+          pusherServer.trigger(
+            user.email,
+            "conversation:update",
+            newConversation
+          );
+        }
+      });
+
       return NextResponse.json(newConversation);
     }
 
@@ -73,10 +92,29 @@ export async function POST(request: Request) {
             connect: [{ id: currentUser.id }, ...userIds.map((id) => ({ id }))],
           },
         },
-        include: { users: true },
+        include: {
+          users: true,
+          messages: {
+            take: 1,
+            orderBy: { createdAt: "desc" },
+          },
+        },
       });
+      newGroupConversation.users.forEach((user) => {
+        if (user.email) {
+          pusherServer.trigger(
+            user.email,
+            "conversation:update",
+            newGroupConversation
+          );
+        }
+      });
+
+      revalidatePath("/conversations");
+
       return NextResponse.json(newGroupConversation);
     }
+    return NextResponse.json("Invalid request", { status: 400 });
   } catch (error) {
     console.error(error);
     return NextResponse.json(error);

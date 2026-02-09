@@ -1,6 +1,7 @@
 import { FullMessageType } from "@/app/types";
 import { useSession } from "next-auth/react";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
+import ImageModal from "@/app/components/ImageModal";
 import clsx from "clsx";
 import Avatar from "@/app/components/Avatar";
 import { format } from "date-fns";
@@ -11,6 +12,7 @@ interface MessageBoxProps {
 }
 export default function MessageBox({ message, isLast }: MessageBoxProps) {
   const session = useSession();
+  const [isImageOpen, setIsImageOpen] = useState(false);
 
   const isOwnMessage = useMemo(() => {
     return session.data?.user?.email === message.sender.email;
@@ -19,7 +21,7 @@ export default function MessageBox({ message, isLast }: MessageBoxProps) {
     .filter((user) => user.email != message.sender.email)
     .map((user) => user.name)
     .join(", ");
-  console.log("from message box\n", session);
+  // console.log("from message box\n", session);
 
   //styles
   const body = clsx("flex flex-col gap-2", isOwnMessage && "items-end");
@@ -44,23 +46,35 @@ export default function MessageBox({ message, isLast }: MessageBoxProps) {
         </div>
         <div className={messagestyle}>
           {message.image ? (
-            <Image
-              alt="image"
-              height={"288"}
-              width={"288"}
-              //@ts-ignore
-              src={message.image}
-              className="object-cover cursor-pointer hover:scale-110 transition translate"
-            />
+            <>
+              <Image
+                alt="image"
+                height={288}
+                width={288}
+                src={message.image}
+                onClick={() => setIsImageOpen(true)}
+                className="
+      object-cover
+      cursor-pointer
+      rounded-md
+      hover:opacity-90
+      transition
+    "
+              />
+
+              <ImageModal
+                isOpen={isImageOpen}
+                src={message.image}
+                onClose={() => setIsImageOpen(false)}
+              />
+            </>
           ) : (
             <div>{message.body}</div>
           )}
-          {isLast && isOwnMessage && seenList.length > 0 && (
-            <div className="text-xs font-light text-gray-500">
-              {`Seen by ${seenList}`}
-            </div>
-          )}
         </div>
+        {isLast && isOwnMessage && seenList.length > 0 && (
+          <div className="text-xs font-light text-gray-700">{`Seen by ${seenList}`}</div>
+        )}
       </div>
     </div>
   );

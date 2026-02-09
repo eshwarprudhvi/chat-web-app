@@ -1,5 +1,6 @@
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import client from "@/lib/prisma";
+import { pusherServer } from "@/lib/pusher";
 import { NextResponse } from "next/server";
 
 interface Iparams {
@@ -61,6 +62,18 @@ export async function POST(request: Request, { params }: { params: Iparams }) {
         sender: true,
       },
     });
+
+    await pusherServer.trigger(currentUser.email, "conversation:update", {
+      id: conversationId,
+      messages: [updatedMessage],
+    });
+
+    await pusherServer.trigger(
+      conversationId!,
+      "message:update",
+      updatedMessage
+    );
+
     return NextResponse.json(updatedMessage);
   } catch (error) {
     console.log("error in conversaions/conversaionid", error);

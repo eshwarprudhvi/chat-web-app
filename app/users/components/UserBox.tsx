@@ -1,9 +1,7 @@
 import { User } from "@/app/generated/prisma/client";
-import React from "react";
 import axios from "axios";
 import Avatar from "@/app/components/Avatar";
 import { useRouter } from "next/navigation";
-import { error } from "console";
 interface UserBoxProps {
   user: User;
 }
@@ -15,18 +13,18 @@ function UserBox({ user }: UserBoxProps) {
       userIds: [user.id],
       isGroup: false,
     };
-
-    await axios
-      .post("/api/conversation", {
+    try {
+      const response = await axios.post("/api/conversations", {
         requestBody,
-      })
-      // .then((response) => {
-      //   router.push(`/conversations/${response.data.id}`);
-      // })
-      .catch((error) => {
-        console.error(error);
       });
+      //@ts-ignore
+      router.push(`/conversations/${response.data.id}`);
+      router.refresh();
+    } catch (error) {
+      console.error(error);
+    }
   };
+
   return (
     <div
       onClick={handleClick}

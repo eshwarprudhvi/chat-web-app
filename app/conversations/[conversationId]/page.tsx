@@ -4,6 +4,7 @@ import Header from "./components/Header";
 import EmptyBox from "@/app/components/EmptyBox";
 import Body from "./components/Body";
 import Form from "./components/Form";
+import Loader from "@/app/components/Loader";
 interface Iparams {
   conversationId: string;
 }
@@ -26,12 +27,10 @@ const ConversationId = async ({ params }: { params: Iparams }) => {
     );
   }
   return (
-    <div className="h-full">
-      <div className="h-full flex flex-col">
-        <Header conversation={conversation} />
-        <Body initialMessages={messages} />
-        <Form />
-      </div>
+    <div className="h-full flex flex-col overflow-hidden">
+      <Header conversation={conversation} />
+      <Body initialMessages={messages} />
+      <Form />
     </div>
   );
 };

@@ -1,5 +1,6 @@
 "use client";
 import Avatar from "@/app/components/Avatar";
+import GroupAvatar from "@/app/components/GroupAvatar";
 import { Conversation, User } from "@/app/generated/prisma/client";
 import useOtherUser from "@/app/hooks/useOtherUser";
 import { useMemo, useState } from "react";
@@ -43,9 +44,13 @@ export default function Header({ conversation }: HeaderProps) {
             <IoChevronBack size={20} className="translate-x-1" />
           </Link>
 
-          <Avatar user={otherUser} />
+          {conversation.isGroup ? (
+            <GroupAvatar users={conversation.users} />
+          ) : (
+            <Avatar user={otherUser} />
+          )}
 
-          <div className="flex flex-col">
+          <div className="ml-2 flex flex-col">
             <span className="font-medium text-gray-900">
               {conversation.name || otherUser?.name}
             </span>
@@ -56,6 +61,7 @@ export default function Header({ conversation }: HeaderProps) {
         <HiDotsHorizontal
           size={20}
           className="text-gray-500 cursor-pointer hover:text-black transition"
+          onClick={() => setDrawerOpen(true)}
         />
       </div>
     </>

@@ -7,7 +7,9 @@ import { CldUploadButton } from "next-cloudinary";
 import axios from "axios";
 
 import MessageInput from "./MessageInput";
+import { useState } from "react";
 export default function Form() {
+  const [loading, setLoading] = useState(false);
   const { conversationId } = useConversation();
 
   const {
@@ -22,11 +24,18 @@ export default function Form() {
   });
 
   const onSubmitHandler: SubmitHandler<FieldValues> = (data) => {
-    setValue("message", "", { shouldValidate: true });
-    axios.post("/api/messages", {
-      ...data,
-      conversationId,
-    });
+    try {
+      setLoading(true);
+      setValue("message", "", { shouldValidate: true });
+      axios.post("/api/messages", {
+        ...data,
+        conversationId,
+      });
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleUpload = (result: any) => {
@@ -40,7 +49,7 @@ export default function Form() {
     <div className="py-4 px-4 gap-2 bg-white border-t flex items-center lg:gap-4 w-full">
       <CldUploadButton
         options={{ maxFiles: 1 }}
-        onUploadAdded={handleUpload}
+        onSuccess={(result) => handleUpload(result)}
         uploadPreset="qxsqlkbu"
       >
         <HiPhoto
@@ -60,9 +69,14 @@ export default function Form() {
         />
         <button
           type="submit"
-          className="rounded-full p-2 bg-gray-400 cursor-pointer hover:bg-gray-600 transition"
+          disabled={loading}
+          className="rounded-full p-2 bg-gray-400 cursor-pointer hover:bg-gray-600 transition disabled:cursor-not-allowed"
         >
-          <IoSend size={18} className="text-white" />
+          {loading ? (
+            <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+          ) : (
+            <IoSend size={18} className="text-white" />
+          )}
         </button>
       </form>
     </div>
