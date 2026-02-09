@@ -1,11 +1,10 @@
 "use client";
 import React, { useMemo } from "react";
-import { Conversation } from "@/app/generated/prisma/client";
+import { User, Conversation, Message } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import GroupAvatar from "@/app/components/GroupAvatar";
 import Avatar from "@/app/components/Avatar";
-import { User } from "@/app/generated/prisma/client";
-import { Message } from "@/app/generated/prisma/client";
+
 interface ConversationBoxProps {
   conversation: Conversation & {
     users: User[];

@@ -1,7 +1,8 @@
 "use client";
 import Avatar from "@/app/components/Avatar";
 import GroupAvatar from "@/app/components/GroupAvatar";
-import { Conversation, User } from "@/app/generated/prisma/client";
+
+import { Conversation, User } from "@prisma/client";
 import useOtherUser from "@/app/hooks/useOtherUser";
 import { useMemo, useState } from "react";
 import { HiDotsHorizontal } from "react-icons/hi";

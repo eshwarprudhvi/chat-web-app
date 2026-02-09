@@ -1,10 +1,9 @@
 "use client";
-import { Conversation, User } from "../../generated/prisma/client";
+import { Conversation, User, Message } from "@prisma/client";
 import ConversationBox from "./ConversationBox";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import { IoIosSearch } from "react-icons/io";
 import { HiUserAdd } from "react-icons/hi";
-import { Message } from "../../generated/prisma/client";
 import { useEffect, useState } from "react";
 import useGroupChatModal from "@/app/hooks/useGroupChatModal";
 import { pusherClient } from "@/lib/pusher";

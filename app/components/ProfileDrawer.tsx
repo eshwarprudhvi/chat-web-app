@@ -1,5 +1,5 @@
 "use client";
-import { User } from "../generated/prisma/client";
+import { User } from "@prisma/client";
 import Avatar from "./Avatar";
 import axios from "axios";
 import { signOut } from "next-auth/react";

@@ -1,4 +1,4 @@
-import { User } from "@/app/generated/prisma/client";
+import { User } from "@prisma/client";
 import axios from "axios";
 import Avatar from "@/app/components/Avatar";
 import { useRouter } from "next/navigation";

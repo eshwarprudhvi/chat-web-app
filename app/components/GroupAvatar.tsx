@@ -1,5 +1,5 @@
 "use client";
-import { User } from "../generated/prisma/client";
+import { User } from "@prisma/client";
 import Image from "next/image";
 interface GroupAvatarProps {
   users: User[];

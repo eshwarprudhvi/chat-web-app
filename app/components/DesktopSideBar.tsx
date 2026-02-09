@@ -5,7 +5,7 @@ import { RiMessage2Fill } from "react-icons/ri";
 import { TbLogout } from "react-icons/tb";
 import { FaUser } from "react-icons/fa6";
 import Avatar from "./Avatar";
-import { User } from "../generated/prisma/client";
+import { User } from "@prisma/client";
 import { useState } from "react";
 import ProfileDrawer from "./ProfileDrawer";
 interface DesktopSideBarProps {

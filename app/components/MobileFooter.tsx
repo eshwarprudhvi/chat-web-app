@@ -4,7 +4,7 @@ import { TbLogout } from "react-icons/tb";
 import { FaUser } from "react-icons/fa6";
 import SidebarNavigations from "./SidebarNavigations";
 import Avatar from "./Avatar";
-import { User } from "../generated/prisma/client";
+import { User } from "@prisma/client";
 
 interface MobileFooterProps {
   currentUser: User | null;

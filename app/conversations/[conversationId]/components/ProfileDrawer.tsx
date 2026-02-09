@@ -1,8 +1,8 @@
 import { Fragment, useState } from "react";
-import { Conversation, User } from "@/app/generated/prisma/client";
 import { Transition } from "@headlessui/react";
 import useOtherUser from "@/app/hooks/useOtherUser";
 import { HiTrash } from "react-icons/hi";
+import { Conversation,User } from "@prisma/client";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import {

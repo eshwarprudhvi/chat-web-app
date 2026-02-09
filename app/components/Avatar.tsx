@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import getCurrentUser from "../actions/getCurrentUser";
-import { User } from "../generated/prisma/client";
+import { User } from "@prisma/client";
 interface AvatarProps {
   user?: User | null;
 }

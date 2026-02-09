@@ -1,3 +1,5 @@
+export const runtime = "nodejs";
+
 import client from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import NextAuth, { AuthOptions } from "next-auth";

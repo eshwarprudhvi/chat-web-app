@@ -9,7 +9,7 @@ import {
 import axios from "axios";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
-import { User } from "@/app/generated/prisma/client";
+import { User } from "@prisma/client";
 import useGroupChatModal from "@/app/hooks/useGroupChatModal";
 
 interface GroupChatModalProps {

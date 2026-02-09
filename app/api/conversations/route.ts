@@ -1,3 +1,5 @@
+export const runtime = "nodejs";
+
 import client from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import getCurrentUser from "@/app/actions/getCurrentUser";
