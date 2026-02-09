@@ -40,7 +40,7 @@ const LoginForm = () => {
       if (result?.ok && !result?.error) {
         toast.success("Logged in successfully");
 
-        router.push("/users");
+        // router.push("/users");
       }
     });
   };
